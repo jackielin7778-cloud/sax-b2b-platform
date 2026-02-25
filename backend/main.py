@@ -312,6 +312,8 @@ def create_order(
     buyer_id: int = Form(...), seller_id: int = Form(...),
     payment_method: str = Form(...), shipping_address: str = Form(...)
 ):
+    global cart_db
+    
     # 取得購物車項目
     cart_items = [c for c in cart_db if c.buyer_id == buyer_id]
     if not cart_items:
@@ -336,7 +338,6 @@ def create_order(
     next_id["order"] += 1
     
     # 清空購物車
-    global cart_db
     cart_db = [c for c in cart_db if c.buyer_id != buyer_id]
     
     return {"message": "訂單建立成功", "order": order.dict()}
