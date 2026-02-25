@@ -230,12 +230,25 @@ def create_product(
     name: str = Form(...), brand: str = Form(...), category: str = Form(...),
     model: str = Form(None), year: int = Form(None), material: str = Form(None),
     condition: str = Form("New"), price: float = Form(None), stock: int = Form(0),
-    description: str = Form(None), files: List[UploadFile] = File([])
+    description: str = Form(None), files: UploadFile = File(None)
 ):
-    # Debug: print received files
-    print(f"Received files: {files}")
-    image_urls = save_images(files)
-    print(f"Saved image URLs: {image_urls}")
+    # Debug
+    print(f"Files received: {files}")
+    
+    # 處理單一檔案
+    image_urls = []
+    if files and files.filename:
+        try:
+            ext = os.path.splitext(files.filename)[1]
+            filename = f"{uuid.uuid4()}{ext}"
+            filepath = UPLOAD_DIR / filename
+            content = files.read()
+            with open(filepath, "wb") as fp:
+                fp.write(content)
+            image_urls.append(f"/uploads/{filename}")
+            print(f"Saved: {filename}")
+        except Exception as e:
+            print(f"Error saving: {e}")
     
     product = Product(
         id=next_id["product"],

@@ -398,17 +398,16 @@ def page_admin():
                         "description": desc
                     }
                     
-                    # 準備檔案
-                    file_tuple = None
-                    if files:
-                        for f in files:
-                            file_tuple = ("files", (f.name, f.getvalue(), f.type))
-                            break  # 一次只能上傳一個
+                    # 準備檔案（單一檔案）
+                    files_param = None
+                    if files and len(files) > 0:
+                        f = files[0]
+                        files_param = [("files", (f.name, f.getvalue(), f.type))]
                     
                     # 發送請求
                     try:
-                        if file_tuple:
-                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, files=[file_tuple], timeout=30)
+                        if files_param:
+                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, files=files_param, timeout=30)
                         else:
                             r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, timeout=30)
                         res = r.json() if r.status_code == 200 else {"error": r.text}
