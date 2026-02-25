@@ -119,6 +119,27 @@ next_id = {
 def now():
     return datetime.now().isoformat()
 
+def seed_data():
+    """初始化範例資料"""
+    global users_db, products_db, next_id
+    
+    users_db.extend([
+        User(id=1, email="admin@sax.com", password="admin123", company_name="平台管理", role="admin", created_at=now()),
+        User(id=2, email="seller@sax.com", password="seller123", company_name="薩克斯風工廠", role="seller", created_at=now()),
+        User(id=3, email="buyer@sax.com", password="buyer123", company_name="音樂教室", role="buyer", created_at=now()),
+    ])
+    
+    products_db.extend([
+        Product(id=1, name="Mark VI Tenor", brand="Selmer", category="Tenor", model="Mark VI", year=1965, condition="Used", price=12000, stock=2, description="經典 Vintage", images=[], status="active", created_at=now()),
+        Product(id=2, name="YAS-62 Alto", brand="Yamaha", category="Alto", model="YAS-62", year=2024, condition="New", price=3200, stock=10, description="專業級", images=[], status="active", created_at=now()),
+        Product(id=3, name="Reference 54 Alto", brand="Selmer", category="Alto", model="Reference 54", year=2024, condition="New", price=7500, stock=5, description="旗艦款", images=[], status="active", created_at=now()),
+        Product(id=4, name="YTS-62 Tenor", brand="Yamaha", category="Tenor", model="YTS-62", year=2024, condition="New", price=3800, stock=8, description="專業次中音", images=[], status="active", created_at=now()),
+    ])
+    next_id = {"user": 4, "product": 5, "inquiry": 1, "cart": 1, "order": 1, "message": 1, "review": 1}
+
+# 啟動時自動載入範例資料
+seed_data()
+
 def save_images(files: List[UploadFile]) -> List[str]:
     urls = []
     for f in files:
