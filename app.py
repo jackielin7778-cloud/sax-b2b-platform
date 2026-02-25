@@ -182,8 +182,13 @@ def page_products():
                     st.write(f"**型號:** {p.get('model', '-')} | **年份:** {p.get('year', '-')}")
                     st.write(f"**狀態:** {p['condition']} | **庫存:** {p.get('stock', 0)}")
                 with c2:
-                    if p.get('images'):
-                        st.image(p['images'][0], width=150)
+                    if p.get('images') and len(p.get('images', [])) > 0:
+                        # 支援 base64 圖片和 URL 圖片
+                        img_url = p['images'][0]
+                        if img_url.startswith('data:'):
+                            st.image(img_url, width=150)
+                        else:
+                            st.image(f"{API_BASE_URL}{img_url}", width=150)
                     if st.session_state.user and st.button(f"🛒 加入購物車", key=f"add_{p['id']}"):
                         res = api_post("/api/cart", {"buyer_id": st.session_state.user['id'], "product_id": p['id']})
                         if res and "error" not in res:
