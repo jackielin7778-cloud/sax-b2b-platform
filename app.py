@@ -385,16 +385,41 @@ def page_admin():
                 if not name:
                     st.error("請填寫名稱")
                 else:
-                    data = {
-                        "name": name, "brand": brand, "category": category,
-                        "model": model, "year": year, "condition": condition,
-                        "price": price, "stock": stock, "description": desc
+                    # 準備表單資料
+                    form_data = {
+                        "name": name,
+                        "brand": brand,
+                        "category": category,
+                        "model": model,
+                        "year": year,
+                        "condition": condition,
+                        "price": price,
+                        "stock": stock,
+                        "description": desc
                     }
-                    file_list = [("files", (f.name, f.getvalue(), f.type)) for f in files] if files else None
-                    res = api_post("/api/products", data=data, files=file_list)
+                    
+                    # 準備檔案
+                    file_tuple = None
+                    if files:
+                        for f in files:
+                            file_tuple = ("files", (f.name, f.getvalue(), f.type))
+                            break  # 一次只能上傳一個
+                    
+                    # 發送請求
+                    try:
+                        if file_tuple:
+                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, files=[file_tuple], timeout=30)
+                        else:
+                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, timeout=30)
+                        res = r.json() if r.status_code == 200 else {"error": r.text}
+                    except Exception as e:
+                        res = {"error": str(e)}
+                    
                     if res and "error" not in res:
                         st.success("✅ 建立成功！")
                         st.rerun()
+                    else:
+                        st.error(f"❌ 建立失敗: {res.get('error', '未知錯誤')}")
     
     # 庫存
     with tabs[2]:
