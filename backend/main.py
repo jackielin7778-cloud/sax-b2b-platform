@@ -2,10 +2,10 @@
 台灣薩克斯風B2B交易平台 - FastAPI 後端
 Zeabur 部署專用
 """
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
 
 # 載入環境變數
 load_dotenv()
@@ -20,7 +20,7 @@ app = FastAPI(
 # CORS 設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生產環境應該限制網域
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -116,9 +116,6 @@ async def get_reports():
     """取得報表"""
     return {"reports": []}
 
-# ============== 啟動訊息 ==============
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    # Zeabur 環境需要綁定 0.0.0.0
-    uvicorn.run(app, host="0.0.0.0", port=port)
+# ============== Zeabur Serverless 入口 ==============
+# Zeabur 的 Serverless 環境需要這個
+# 不要使用 uvicorn.run()
