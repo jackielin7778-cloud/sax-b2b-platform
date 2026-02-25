@@ -178,7 +178,7 @@ def get_product(product_id: int):
     raise HTTPException(status_code=404, detail="商品不存在")
 
 @app.post("/api/products")
-def create_product(name: str = Form(...), brand: str = Form(...), category: str = Form(...),
+async def create_product(name: str = Form(...), brand: str = Form(...), category: str = Form(...),
     model: str = Form(None), year: int = Form(None), material: str = Form(None),
     condition: str = Form("New"), price: float = Form(None), stock: int = Form(0),
     description: str = Form(None), files: UploadFile = File(None)):
@@ -187,7 +187,7 @@ def create_product(name: str = Form(...), brand: str = Form(...), category: str 
     image_b64 = []
     if files and files.filename:
         try:
-            content = files.read()
+            content = await files.read()
             b64 = base64.b64encode(content).decode('utf-8')
             ext = os.path.splitext(files.filename)[1].lower()
             mime = "image/jpeg" if ext in ['.jpg', '.jpeg'] else "image/png" if ext == '.png' else "image/gif"
