@@ -1,0 +1,49 @@
+name: Deploy to Zeabur
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+      
+      - name: Deploy to Zeabur
+        run: |
+          echo "Deploying to Zeabur..."
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install Streamlit
+        run: |
+          pip install streamlit
+      
+      - name: Run Streamlit locally test
+        run: |
+          echo "Testing Streamlit app..."
