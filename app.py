@@ -1,5 +1,6 @@
 """
 台灣薩克斯風B2B交易平台 - Streamlit 前端
+包含前台展示 + 後台管理
 """
 import streamlit as st
 import requests
@@ -7,19 +8,17 @@ import os
 from pathlib import Path
 
 # ============== API 設定 ==============
-# 後端 API 位址（Zeabur）- 直接寫死
 API_BASE_URL = "https://sax-b2b-platform.zeabur.app"
 
 # ============== 語系配置 ==============
 LANGUAGES = {
     "zh-TW": "繁體中文",
-    "zh-CN": "简体中文", 
+    "zh-CN": "簡體中文", 
     "ja": "日本語",
     "ko": "한국어",
     "en": "English"
 }
 
-# IP對應語系
 IP_LANGUAGE_MAP = {
     "TW": "zh-TW",
     "HK": "zh-TW",
@@ -29,22 +28,22 @@ IP_LANGUAGE_MAP = {
     "KR": "ko"
 }
 
-# 翻譯字典
 TRANSLATIONS = {
     "zh-TW": {
         "title": "台灣薩克斯風B2B交易平台",
         "home": "首頁",
-        "products": "商品瀏览",
+        "products": "商品瀏覽",
         "inquiry": "詢價系統",
         "orders": "訂單管理",
         "messages": "訊息",
         "login": "登入",
         "register": "註冊",
         "logout": "登出",
-        "welcome": "歡迎來到",
-        "tagline": "全球薩克斯風B2B交易首選平台",
-        "hero_title": "專業薩克斯風B2B交易平台",
-        "hero_subtitle": "連接全球製造商與經銷商",
+        "admin": "後台管理",
+        "product_management": "商品管理",
+        "add_product": "新增商品",
+        "edit_product": "編輯商品",
+        "delete_product": "刪除商品",
         "featured_brands": "精選品牌",
         "product_categories": "商品分類",
         "search_placeholder": "搜尋商品...",
@@ -61,58 +60,19 @@ TRANSLATIONS = {
         "login": "登录",
         "register": "注册",
         "logout": "退出",
-        "welcome": "欢迎来到",
-        "tagline": "全球萨克斯风B2B交易首选平台",
-        "hero_title": "专业萨克斯风B2B交易平台",
-        "hero_subtitle": "连接全球制造商与经销商",
+        "admin": "后台管理",
+        "product_management": "商品管理",
+        "add_product": "新增商品",
+        "edit_product": "编辑商品",
+        "delete_product": "删除商品",
         "featured_brands": "精选品牌",
         "product_categories": "商品分类",
         "search_placeholder": "搜索商品...",
         "contact": "联系我们",
         "about": "关于我们",
     },
-    "ja": {
-        "title": "台湾サックスB2B取引プラットフォーム",
-        "home": "ホーム",
-        "products": "商品一覧",
-        "inquiry": "見積依頼",
-        "orders": "注文管理",
-        "messages": "メッセージ",
-        "login": "ログイン",
-        "register": "登録",
-        "logout": "ログアウト",
-        "welcome": "ようこそ",
-        "tagline": "世界初のサックスB2B取引プラットフォーム",
-        "hero_title": "プロフェッショナルサックスB2B取引プラットフォーム",
-        "hero_subtitle": "世界の製造業者とディーラーをつなぐ",
-        "featured_brands": "おすすめブランド",
-        "product_categories": "商品カテゴリー",
-        "search_placeholder": "商品を検索...",
-        "contact": "お問い合わせ",
-        "about": "会社概要",
-    },
-    "ko": {
-        "title": "태국 색소폰 B2B 거래 플랫폼",
-        "home": "홈",
-        "products": "상품 보기",
-        "inquiry": "견적 문의",
-        "orders": "주문 관리",
-        "messages": "메시지",
-        "login": "로그인",
-        "register": "회원가입",
-        "logout": "로그아웃",
-        "welcome": "오신 것을 환영합니다",
-        "tagline": "세계 최초 색소폰 B2B 거래 플랫폼",
-        "hero_title": "프로фессиональ 색소폰 B2B 거래 플랫폼",
-        "hero_subtitle": "전 세계 제조업체와ディ러 연결",
-        "featured_brands": "추천 브랜드",
-        "product_categories": "상품 카테고리",
-        "search_placeholder": "상품 검색...",
-        "contact": "문의하기",
-        "about": "회사 소개",
-    },
     "en": {
-        "title": "Taiwan Saxophone B2B Trading Platform",
+        "title": "Taiwan Saxophone B2B Platform",
         "home": "Home",
         "products": "Products",
         "inquiry": "Inquiry",
@@ -121,86 +81,70 @@ TRANSLATIONS = {
         "login": "Login",
         "register": "Register",
         "logout": "Logout",
-        "welcome": "Welcome to",
-        "tagline": "The Premier B2B Saxophone Trading Platform",
-        "hero_title": "Professional Saxophone B2B Trading Platform",
-        "hero_subtitle": "Connecting Global Manufacturers with Dealers",
+        "admin": "Admin",
+        "product_management": "Product Management",
+        "add_product": "Add Product",
+        "edit_product": "Edit Product",
+        "delete_product": "Delete Product",
         "featured_brands": "Featured Brands",
-        "product_categories": "Product Categories",
+        "product_categories": "Categories",
         "search_placeholder": "Search products...",
-        "contact": "Contact Us",
-        "about": "About Us",
+        "contact": "Contact",
+        "about": "About",
     }
 }
 
+# ============== API 函數 ==============
+def get_api(url, params=None):
+    try:
+        response = requests.get(f"{API_BASE_URL}{url}", params=params, timeout=10)
+        return response.json() if response.status_code == 200 else None
+    except:
+        return None
+
+def post_api(url, data=None, files=None):
+    try:
+        if files:
+            response = requests.post(f"{API_BASE_URL}{url}", data=data, files=files, timeout=30)
+        else:
+            response = requests.post(f"{API_BASE_URL}{url}", json=data, timeout=10)
+        return response.json() if response.status_code == 200 else None
+    except Exception as e:
+        return {"error": str(e)}
+
+def put_api(url, data=None):
+    try:
+        response = requests.put(f"{API_BASE_URL}{url}", json=data, timeout=10)
+        return response.json() if response.status_code == 200 else None
+    except:
+        return None
+
+def delete_api(url):
+    try:
+        response = requests.delete(f"{API_BASE_URL}{url}", timeout=10)
+        return response.status_code == 200
+    except:
+        return False
+
 # ============== 語系偵測 ==============
-def get_client_ip():
-    """取得客戶端IP"""
-    try:
-        # 嘗試從請求頭取得
-        headers = {
-            'User-Agent': 'Streamlit'
-        }
-        response = requests.get('https://api.ipify.org?format=json', headers=headers, timeout=5)
-        return response.json().get('ip', '8.8.8.8')
-    except:
-        return '8.8.8.8'
-
-def get_country_from_ip(ip):
-    """從IP取得國碼"""
-    try:
-        # 使用免費的 ipapi
-        response = requests.get(f'https://ipapi.co/{ip}/json/', timeout=5)
-        if response.status_code == 200:
-            return response.json().get('country_code', 'US')
-    except:
-        pass
-    return 'US'
-
 def detect_language():
-    """自動偵測語系"""
-    # 檢查 session_state 是否有已儲存的偏好
     if 'language' not in st.session_state:
-        st.session_state.language = 'en'
+        st.session_state.language = 'zh-TW'
     
-    # 檢查 URL 參數
     params = st.query_params
     if 'lang' in params:
         lang = params['lang']
         if lang in LANGUAGES:
             st.session_state.language = lang
-            return
-    
-    # 檢查 Cookie
-    # 如果都沒有，則依 IP 偵測
-    ip = get_client_ip()
-    country = get_country_from_ip(ip)
-    lang = IP_LANGUAGE_MAP.get(country, 'en')
-    st.session_state.language = lang
 
 def set_language(lang):
-    """設定語系"""
     if lang in LANGUAGES:
         st.session_state.language = lang
         st.query_params['lang'] = lang
-        st.rerun()
 
 def t(key):
-    """翻譯函數"""
-    lang = st.session_state.get('language', 'en')
-    return TRANSLATIONS.get(lang, TRANSLATIONS['en']).get(key, key)
-
-# ============== API 測試 ==============
-def test_api_connection():
-    """測試 API 連線"""
-    try:
-        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
-        if response.status_code == 200:
-            return True, response.json()
-        else:
-            return False, f"Status: {response.status_code}"
-    except Exception as e:
-        return False, str(e)
+    lang = st.session_state.get('language', 'zh-TW')
+    return TRANSLATIONS.get(lang, TRANSLATIONS['zh-TW']).get(key, key)
 
 # ============== 頁面配置 ==============
 def set_page_config():
@@ -215,35 +159,19 @@ def set_page_config():
 def local_css():
     st.markdown("""
     <style>
-    /* 奢華金色主題 */
     :root {
         --primary-gold: #D4AF37;
         --secondary-gold: #C5A028;
         --dark-steel: #2C3E50;
         --warm-copper: #B87333;
-        --ivory: #FAF9F6;
-        --light-gray: #F5F5F5;
     }
-    
-    /* 導航欄 */
-    .stRadio > div {
-        flex-direction: row !important;
-    }
-    
-    /* 按鈕樣式 */
     .stButton > button {
         background-color: #D4AF37 !important;
         color: white !important;
-        border: none !important;
-        border-radius: 5px !important;
     }
-    
-    /* 標題樣式 */
     h1, h2, h3 {
         color: #2C3E50 !important;
     }
-    
-    /* Hero 區塊 */
     .hero-section {
         background: linear-gradient(135deg, #2C3E50 0%, #1a252f 100%);
         padding: 60px 20px;
@@ -251,82 +179,240 @@ def local_css():
         text-align: center;
         margin-bottom: 30px;
     }
-    
     .hero-title {
         color: #D4AF37 !important;
         font-size: 48px !important;
         font-weight: bold !important;
     }
-    
     .hero-subtitle {
         color: white !important;
         font-size: 20px !important;
     }
-    
-    /* 品牌卡片 */
     .brand-card {
         background: white;
         border: 2px solid #D4AF37;
         border-radius: 10px;
         padding: 20px;
         text-align: center;
-        transition: transform 0.3s;
-    }
-    
-    .brand-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    
-    /* 語系選單 */
-    .language-selector {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# ============== 導航欄 ==============
-def render_navbar():
-    """渲染導航欄"""
-    lang = st.session_state.get('language', 'en')
+# ============== 前台頁面 ==============
+def render_home():
+    st.markdown(f"""
+    <div class="hero-section">
+        <h1 class="hero-title">🎷 專業薩克斯風B2B交易平台</h1>
+        <p class="hero-subtitle">連接全球製造商與經銷商</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
-    
+    # 搜尋
+    col1, col2 = st.columns([3, 1])
     with col1:
-        st.markdown(f"### 🎷 {t('title')}")
-    
+        st.text_input("", placeholder=t('search_placeholder'), label_visibility="collapsed")
     with col2:
-        if st.button(t('home'), use_container_width=True):
-            st.session_state.page = 'home'
-            st.rerun()
+        st.button("🔍 搜尋", use_container_width=True)
     
+    st.markdown("---")
+    
+    # 品牌
+    st.header("✨ " + t('featured_brands'))
+    brands = [
+        ("Selmer", "法國經典"),
+        ("Yamaha", "日本精工"),
+        ("Yanagisawa", "日本專業"),
+        ("Keilwerth", "德國工藝")
+    ]
+    cols = st.columns(4)
+    for i, (brand, desc) in enumerate(brands):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="brand-card">
+                <h3 style="color: #D4AF37">{brand}</h3>
+                <p>{desc}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # 分類
+    st.header("📦 " + t('product_categories'))
+    categories = [
+        ("Alto", "中音薩克斯風", "🎷"),
+        ("Tenor", "次中音薩克斯風", "🎷"),
+        ("Soprano", "高音薩克斯風", "🎷"),
+        ("Baritone", "上低音薩克斯風", "🎷")
+    ]
+    cols = st.columns(4)
+    for i, (name, desc, icon) in enumerate(categories):
+        with cols[i]:
+            st.info(f"{icon} **{name}**\n\n{desc}")
+
+def render_products():
+    st.header(t('products'))
+    
+    # 取得分類
+    cats = get_api("/api/categories")
+    
+    # 篩選
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        category_filter = st.selectbox("類型", ["全部"] + (cats.get('categories', []) if cats else []))
+    with col2:
+        brand_filter = st.selectbox("品牌", ["全部"] + (cats.get('brands', []) if cats else []))
     with col3:
-        if st.button(t('products'), use_container_width=True):
-            st.session_state.page = 'products'
-            st.rerun()
+        status_filter = st.selectbox("狀態", ["active", "inactive"])
     
-    with col4:
-        if st.button(t('inquiry'), use_container_width=True):
-            st.session_state.page = 'inquiry'
-            st.rerun()
+    # 取得商品
+    params = {}
+    if category_filter != "全部":
+        params['category'] = category_filter
+    if brand_filter != "全部":
+        params['brand'] = brand_filter
+    params['status'] = status_filter
     
-    with col5:
-        if st.button(t('login'), use_container_width=True):
-            st.session_state.page = 'login'
-            st.rerun()
+    result = get_api("/api/products", params)
+    
+    if result and result.get('products'):
+        for product in result['products']:
+            with st.expander(f"{product['name']} - ${product.get('price', 'N/A')}"):
+                st.write(f"**品牌:** {product['brand']}")
+                st.write(f"**類型:** {product['category']}")
+                st.write(f"**型號:** {product.get('model', 'N/A')}")
+                st.write(f"**年份:** {product.get('year', 'N/A')}")
+                st.write(f"**狀態:** {product['condition']}")
+                st.write(f"**說明:** {product.get('description', 'N/A')}")
+                if product.get('images'):
+                    st.image(product['images'][0], width=200)
+    else:
+        st.info("尚無商品，請至後台新增")
+
+# ============== 後台頁面 ==============
+def render_admin():
+    st.header("🎛️ " + t('admin'))
+    
+    # 後台選單
+    admin_menu = st.radio(
+        "請選擇功能",
+        [t('product_management'), t('add_product')],
+        horizontal=True
+    )
+    
+    if admin_menu == t('product_management'):
+        render_product_list()
+    elif admin_menu == t('add_product'):
+        render_product_form()
+
+def render_product_list():
+    st.subheader("📋 " + t('product_management'))
+    
+    # 取得商品
+    result = get_api("/api/products?status=active")
+    
+    if result and result.get('products'):
+        for product in result['products']:
+            with st.expander(f"🔹 {product['name']} (ID: {product['id']})"):
+                col1, col2, col3 = st.columns([2, 2, 1])
+                
+                with col1:
+                    st.write(f"**品牌:** {product['brand']}")
+                    st.write(f"**類型:** {product['category']}")
+                    st.write(f"**型號:** {product.get('model', '-')}")
+                
+                with col2:
+                    st.write(f"**年份:** {product.get('year', '-')}")
+                    st.write(f"**狀態:** {product['condition']}")
+                    st.write(f"**價格:** ${product.get('price', '-')}")
+                
+                with col3:
+                    if st.button(f"🗑️ 刪除", key=f"del_{product['id']}", type="primary"):
+                        if delete_api(f"/api/products/{product['id']}"):
+                            st.success("刪除成功！")
+                            st.rerun()
+                        else:
+                            st.error("刪除失敗")
+    else:
+        st.info("尚無商品，請先新增")
+
+def render_product_form():
+    st.subheader("➕ " + t('add_product'))
+    
+    with st.form("product_form", clear_on_submit=True):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            name = st.text_input("商品名稱 *", placeholder="例如: Mark VI Tenor")
+            brand = st.selectbox("品牌 *", ["Selmer", "Yamaha", "Yanagisawa", "Keilwerth", "其他"])
+            category = st.selectbox("類型 *", ["Alto", "Tenor", "Soprano", "Baritone"])
+            model = st.text_input("型號", placeholder="例如: YAS-62")
+        
+        with col2:
+            year = st.number_input("製造年份", min_value=1900, max_value=2030, step=1)
+            condition = st.selectbox("商品狀態", ["New", "Used"])
+            price = st.number_input("價格 (USD)", min_value=0.0, step=100.0)
+            material = st.text_input("材質", placeholder="例如: Brass")
+        
+        description = st.text_area("商品說明", height=3)
+        
+        # 圖片上傳
+        st.write("📷 商品圖片")
+        uploaded_files = st.file_uploader(
+            "選擇圖片（可多選）",
+            type=['png', 'jpg', 'jpeg', 'gif', 'webp'],
+            accept_multiple_files=True
+        )
+        
+        # 預覽圖片
+        if uploaded_files:
+            st.write("預覽：")
+            cols = st.columns(min(len(uploaded_files), 4))
+            for i, f in enumerate(uploaded_files):
+                with cols[i % 4]:
+                    st.image(f, width=100)
+        
+        submit = st.form_submit_button("💾 建立商品", type="primary")
+        
+        if submit:
+            if not name or not brand or not category:
+                st.error("請填寫必填欄位（名稱、品牌、類型）")
+            else:
+                # 準備資料
+                data = {
+                    "name": name,
+                    "brand": brand,
+                    "category": category,
+                    "model": model,
+                    "year": year if year else None,
+                    "condition": condition,
+                    "price": price if price else None,
+                    "material": material,
+                    "description": description
+                }
+                
+                # 準備檔案
+                files = []
+                if uploaded_files:
+                    for f in uploaded_files:
+                        files.append(("files", (f.name, f.getvalue(), f.type)))
+                
+                # 發送請求
+                result = post_api("/api/products", data=data, files=files if files else None)
+                
+                if result and "error" not in result:
+                    st.success("✅ 商品建立成功！")
+                    st.rerun()
+                else:
+                    st.error(f"❌ 建立失敗: {result.get('error', '未知錯誤')}")
 
 # ============== 側邊欄 ==============
 def render_sidebar():
-    """渲染側邊欄"""
     with st.sidebar:
         st.header("🎷 Menu")
         
-        # 語系選擇
-        st.subheader("🌐 Language / 語言")
-        current_lang = st.session_state.get('language', 'en')
+        # 語系
+        st.subheader("🌐 語言")
+        current_lang = st.session_state.get('language', 'zh-TW')
         selected_lang = st.radio(
             "選擇語言",
             options=list(LANGUAGES.keys()),
@@ -339,123 +425,59 @@ def render_sidebar():
         
         st.divider()
         
-        # 搜尋
-        st.subheader(t('search_placeholder'))
-        search_query = st.text_input("", placeholder=t('search_placeholder'), label_visibility="collapsed")
+        # 導航
+        st.subheader("📍 導航")
+        page = st.radio(
+            "頁面",
+            [t('home'), t('products'), t('admin')],
+            label_visibility="collapsed"
+        )
         
         st.divider()
         
-        # 商品分類
-        st.subheader(t('product_categories'))
-        categories = ["Alto Saxophone", "Tenor Saxophone", "Soprano Saxophone", "Baritone Saxophone"]
-        for cat in categories:
-            st.write(f"• {cat}")
-        
-        st.divider()
-        
-        # 精選品牌
-        st.subheader(t('featured_brands'))
-        brands = ["Selmer", "Yamaha", "Yanagisawa", "Keilwerth"]
-        for brand in brands:
-            st.write(f"• {brand}")
-        
-        st.divider()
-        
-        # API 狀態
+        # API 測試
         st.subheader("🔌 API 狀態")
-        if st.button("測試連線", use_container_width=True):
-            success, result = test_api_connection()
-            if success:
+        if st.button("測試連線"):
+            result = get_api("/health")
+            if result:
                 st.success(f"✅ 連線成功\n\n{result}")
             else:
-                st.error(f"❌ 連線失敗\n\n{result}")
-
-# ============== 首頁 ==============
-def render_home():
-    """渲染首頁"""
-    # Hero Section
-    st.markdown(f"""
-    <div class="hero-section">
-        <h1 class="hero-title">{t('hero_title')}</h1>
-        <p class="hero-subtitle">{t('hero_subtitle')}</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # 搜尋列
-    search_col1, search_col2, search_col3 = st.columns([2, 1, 1])
-    with search_col1:
-        st.text_input("", placeholder=t('search_placeholder'), label_visibility="collapsed")
-    with search_col2:
-        st.button("🔍 搜尋", use_container_width=True)
-    
-    st.markdown("---")
-    
-    # 精選品牌
-    st.header(f"✨ {t('featured_brands')}")
-    brand_col1, brand_col2, brand_col3, brand_col4 = st.columns(4)
-    
-    brands = [
-        ("Selmer", "法國經典", "#D4AF37"),
-        ("Yamaha", "日本精工", "#2C3E50"),
-        ("Yanagisawa", "日本專業", "#B87333"),
-        ("Keilwerth", "德國工藝", "#34495E")
-    ]
-    
-    for i, (brand, desc, color) in enumerate(brands):
-        with [brand_col1, brand_col2, brand_col3, brand_col4][i]:
-            st.markdown(f"""
-            <div class="brand-card">
-                <h3 style="color: {color}">{brand}</h3>
-                <p>{desc}</p>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # 商品分類
-    st.header(f"📦 {t('product_categories')}")
-    cat_col1, cat_col2, cat_col3, cat_col4 = st.columns(4)
-    
-    categories = [
-        ("Alto", "次中音", "🎷"),
-        ("Tenor", "高音", "🎷"),
-        ("Soprano", "超高音", "🎷"),
-        ("Baritone", "上低音", "🎷")
-    ]
-    
-    for i, (name, desc, icon) in enumerate(categories):
-        with [cat_col1, cat_col2, cat_col3, cat_col4][i]:
-            st.info(f"{icon} **{name}**\n\n{desc}")
+                st.error("❌ 連線失敗")
 
 # ============== 主程式 ==============
 def main():
-    # 初始化
     detect_language()
     set_page_config()
     local_css()
     
-    # 初始化 session state
+    # 初始化
     if 'page' not in st.session_state:
-        st.session_state.page = 'home'
+        st.session_state.page = t('home')
     
-    # 渲染導航
-    render_navbar()
-    
-    # 渲染側邊欄
+    # 渲染
     render_sidebar()
     
-    # 根據頁面狀態渲染內容
-    if st.session_state.page == 'home':
+    # 根據選擇渲染
+    page = st.session_state.get('page', t('home'))
+    
+    # 從 radio 取得當前頁面（因為每次render都會重新創建）
+    # 使用 query_params 或 session_state 來記住
+    with st.sidebar:
+        page_choice = st.radio(
+            "導航",
+            [t('home'), t('products'), t('admin')],
+            index=[t('home'), t('products'), t('admin')].index(st.session_state.page) if st.session_state.page in [t('home'), t('products'), t('admin')] else 0,
+            label_visibility="collapsed",
+            key="page_radio"
+        )
+        st.session_state.page = page_choice
+    
+    if st.session_state.page == t('home'):
         render_home()
-    elif st.session_state.page == 'products':
-        st.header(t('products'))
-        st.info("商品列表頁面開發中...")
-    elif st.session_state.page == 'inquiry':
-        st.header(t('inquiry'))
-        st.info("詢價系統開發中...")
-    elif st.session_state.page == 'login':
-        st.header(t('login'))
-        st.info("登入/註冊頁面開發中...")
+    elif st.session_state.page == t('products'):
+        render_products()
+    elif st.session_state.page == t('admin'):
+        render_admin()
     else:
         render_home()
 
