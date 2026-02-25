@@ -232,11 +232,16 @@ def create_product(
     condition: str = Form("New"), price: float = Form(None), stock: int = Form(0),
     description: str = Form(None), files: List[UploadFile] = File([])
 ):
+    # Debug: print received files
+    print(f"Received files: {files}")
+    image_urls = save_images(files)
+    print(f"Saved image URLs: {image_urls}")
+    
     product = Product(
         id=next_id["product"],
         name=name, brand=brand, category=category, model=model,
         year=year, material=material, condition=condition, price=price,
-        stock=stock, description=description, images=save_images(files),
+        stock=stock, description=description, images=image_urls,
         status="active", created_at=now()
     )
     products_db.append(product)
