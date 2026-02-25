@@ -142,14 +142,20 @@ seed_data()
 
 def save_images(files: List[UploadFile]) -> List[str]:
     urls = []
+    if not files:
+        return urls
     for f in files:
         if f and f.filename:
-            ext = os.path.splitext(f.filename)[1]
-            filename = f"{uuid.uuid4()}{ext}"
-            filepath = UPLOAD_DIR / filename
-            with open(filepath, "wb") as fp:
-                fp.write(f.read())
-            urls.append(f"/uploads/{filename}")
+            try:
+                ext = os.path.splitext(f.filename)[1]
+                filename = f"{uuid.uuid4()}{ext}"
+                filepath = UPLOAD_DIR / filename
+                content = f.read()
+                with open(filepath, "wb") as fp:
+                    fp.write(content)
+                urls.append(f"/uploads/{filename}")
+            except Exception as e:
+                print(f"Error saving image: {e}")
     return urls
 
 # ============== 根路由 ==============
