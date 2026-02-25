@@ -229,7 +229,9 @@ def page_cart():
     with st.form("checkout"):
         payment = st.selectbox("付款方式", ["bank_transfer", "credit_card", "cod", "installment"])
         address = st.text_area("收貨地址")
-        if st.button(t("checkout"), type="primary"):
+        submitted = st.form_submit_button(t("checkout"), type="primary")
+        
+        if submitted:
             if not address:
                 st.error("請填寫收貨地址")
             else:
@@ -281,7 +283,9 @@ def page_inquiry():
     with st.form("inquiry_form"):
         product_id = st.number_input("商品ID", min_value=1)
         message = st.text_area("詢價訊息")
-        if st.button("發送詢價", type="primary"):
+        submitted = st.form_submit_button("發送詢價", type="primary")
+        
+        if submitted:
             res = api_post("/api/inquiries", {
                 "product_id": product_id,
                 "buyer_id": st.session_state.user['id'],
@@ -313,7 +317,9 @@ def page_messages():
     with st.form("msg_form"):
         receiver_id = st.number_input("收件人ID", min_value=1)
         content = st.text_area("訊息內容")
-        if st.button("發送", type="primary"):
+        submitted = st.form_submit_button("發送", type="primary")
+        
+        if submitted:
             res = api_post("/api/messages", {
                 "sender_id": st.session_state.user['id'],
                 "receiver_id": receiver_id,
@@ -373,7 +379,9 @@ def page_admin():
             desc = st.text_area("說明")
             files = st.file_uploader("圖片", type=['png','jpg','jpeg'], accept_multiple_files=True)
             
-            if st.button("💾 建立", type="primary"):
+            submitted = st.form_submit_button("💾 建立", type="primary")
+            
+            if submitted:
                 if not name:
                     st.error("請填寫名稱")
                 else:
