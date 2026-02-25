@@ -1,6 +1,6 @@
 """
 台灣薩克斯風B2B交易平台 - Streamlit 前端
-完整版（包含所有功能）
+奢華精品風格 (Selmer Style)
 """
 import streamlit as st
 import requests
@@ -9,37 +9,180 @@ from datetime import datetime
 # ============== API 設定 ==============
 API_BASE_URL = "https://sax-b2b-platform.zeabur.app"
 
-# ============== 翻譯 ==============
-TRANSLATIONS = {
-    "zh-TW": {
-        "title": "台灣薩克斯風B2B交易平台", "home": "首頁", "products": "商品",
-        "cart": "購物車", "orders": "訂單", "messages": "訊息", "inquiry": "詢價",
-        "login": "登入", "register": "註冊", "admin": "後台", "logout": "登出",
-        "product_mgmt": "商品管理", "inventory": "庫存管理", "finance": "帳務",
-        "add_product": "新增商品", "featured_brands": "精選品牌", "search": "搜尋...",
-        "qty": "數量", "price": "價格", "total": "總計", "checkout": "結帳",
-        "no_items": "購物車是空的", "order_success": "訂單建立成功！",
-        "name": "名稱", "brand": "品牌", "category": "類型", "model": "型號",
-        "year": "年份", "condition": "狀態", "description": "說明",
-        "stock": "庫存", "status": "狀態", "actions": "操作",
-    },
-    "en": {
-        "title": "Taiwan Sax B2B", "home": "Home", "products": "Products",
-        "cart": "Cart", "orders": "Orders", "messages": "Messages", "inquiry": "Inquiry",
-        "login": "Login", "register": "Register", "admin": "Admin", "logout": "Logout",
-        "product_mgmt": "Products", "inventory": "Inventory", "finance": "Finance",
-        "add_product": "Add Product", "featured_brands": "Brands", "search": "Search...",
-        "qty": "Qty", "price": "Price", "total": "Total", "checkout": "Checkout",
-        "no_items": "Cart is empty", "order_success": "Order created!",
-        "name": "Name", "brand": "Brand", "category": "Category", "model": "Model",
-        "year": "Year", "condition": "Condition", "description": "Description",
-        "stock": "Stock", "status": "Status", "actions": "Actions",
+# ============== 奢華 CSS 風格 ==============
+st.markdown("""
+<style>
+    /* 全局 */
+    .stApp {
+        background-color: #0D0D0D;
+        color: #F5F5F5;
     }
-}
+    
+    /* 標題 */
+    h1, h2, h3, h4 {
+        color: #C9A962 !important;
+        font-family: 'Georgia', serif;
+        font-weight: 500;
+    }
+    
+    /* 奢華金色 */
+    :root {
+        --gold: #C9A962;
+        --gold-light: #D4B76A;
+        --gold-dark: #A88B4A;
+        --dark: #0D0D0D;
+        --dark-gray: #1A1A1A;
+        --gray: #333333;
+        --light-gray: #F5F5F5;
+    }
+    
+    /* 按鈕 */
+    .stButton > button {
+        background: linear-gradient(135deg, var(--gold-dark), var(--gold)) !important;
+        color: #0D0D0D !important;
+        border: none !important;
+        border-radius: 2px !important;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    
+    .stButton > button:hover {
+        background: var(--gold-light) !important;
+    }
+    
+    /* 輸入框 */
+    .stTextInput > div > div > input, .stTextArea > div > div > textarea {
+        background-color: var(--dark-gray);
+        border: 1px solid var(--gray);
+        color: var(--light-gray);
+    }
+    
+    /* 卡片 */
+    .product-card {
+        background: var(--dark-gray);
+        border: 1px solid var(--gray);
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 2px;
+    }
+    
+    /* 側邊欄 */
+    section[data-testid="stSidebar"] {
+        background-color: var(--dark-gray);
+    }
+    
+    /* 導航 */
+    .nav-button {
+        padding: 10px 20px;
+        color: var(--gold);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    /* 區塊標題 */
+    .section-title {
+        color: var(--gold);
+        font-size: 28px;
+        font-weight: 300;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 40px 0 20px 0;
+    }
+    
+    /* 品牌字體 */
+    .brand-title {
+        font-family: 'Georgia', serif;
+        font-size: 42px;
+        color: var(--gold);
+        letter-spacing: 8px;
+    }
+    
+    /* 產品展示 */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
+    }
+    
+    .product-item {
+        background: linear-gradient(180deg, #1A1A1A 0%, #0D0D0D 100%);
+        border: 1px solid #333;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .product-item:hover {
+        border-color: var(--gold);
+        transform: translateY(-5px);
+    }
+    
+    /* 菜單選項 */
+    .menu-item {
+        color: #999 !important;
+        padding: 12px 0;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+    }
+    
+    .menu-item:hover, .menu-item.active {
+        color: var(--gold) !important;
+        border-left: 3px solid var(--gold);
+        padding-left: 10px;
+    }
+    
+    /* 分隔線 */
+    hr {
+        border-color: #333;
+    }
+    
+    /* 警告/成功 */
+    .stAlert {
+        background-color: var(--dark-gray);
+        border: 1px solid var(--gold);
+    }
+    
+    /* 標籤 */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: transparent;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        color: #999;
+        background: transparent;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        color: var(--gold) !important;
+        border-bottom: 2px solid var(--gold);
+    }
+    
+    /* Radio */
+    .stRadio > div > label {
+        color: #999;
+    }
+    
+    /* 圖片 */
+    img {
+        border-radius: 2px;
+    }
+    
+    /* 展開 */
+    .streamlit-expanderHeader {
+        background-color: var(--dark-gray);
+        color: var(--light-gray);
+    }
+</style>
+""", unsafe_allow_html=True)
 
-def t(key):
-    lang = st.session_state.get('language', 'zh-TW')
-    return TRANSLATIONS.get(lang, TRANSLATIONS['zh-TW']).get(key, key)
+# ============== 初始化 ==============
+if 'page' not in st.session_state: 
+    st.session_state.page = 'home'
+if 'user' not in st.session_state: 
+    st.session_state.user = None
 
 # ============== API 函數 ==============
 def api_get(url, params=None):
@@ -56,149 +199,131 @@ def api_post(url, data=None, files=None):
     except Exception as e:
         return {"error": str(e)}
 
-def api_put(url, data=None):
-    try:
-        r = requests.put(f"{API_BASE_URL}{url}", data=data, timeout=10)
-        return r.json() if r.status_code == 200 else None
-    except:
-        return None
-
-def api_delete(url):
-    try:
-        return requests.delete(f"{API_BASE_URL}{url}", timeout=10).status_code == 200
-    except:
-        return False
-
-# ============== 頁面配置 ==============
-st.set_page_config(page_title="台灣薩克斯風B2B", page_icon="🎷", layout="wide")
-
-# CSS
-st.markdown("""
-<style>
-    :root { --primary-gold: #D4AF37; --dark-steel: #2C3E50; }
-    .stButton > button { background-color: #D4AF37 !important; color: white !important; }
-    h1, h2, h3 { color: #2C3E50 !important; }
-    .hero { background: linear-gradient(135deg, #2C3E50, #1a252f); padding: 50px; border-radius: 10px; text-align: center; }
-    .hero h1 { color: #D4AF37 !important; }
-    .hero p { color: white; font-size: 20px; }
-    .brand-card { border: 2px solid #D4AF37; border-radius: 10px; padding: 20px; text-align: center; background: white; }
-    .stTabs [data-baseweb="tab-list"] { gap: 2px; }
-    .stTabs [data-baseweb="tab"] { height: 50px; white-space: pre-wrap; background-color: #F0F2F6; border-radius: 4px 4px 0px 0px; }
-    .stTabs [aria-selected="true"] { background-color: #D4AF37; color: white; }
-</style>
-""", unsafe_allow_html=True)
-
-# ============== 初始化 ==============
-if 'page' not in st.session_state: st.session_state.page = 'home'
-if 'user' not in st.session_state: st.session_state.user = None
-
-# ============== 側邊欄 ==============
-with st.sidebar:
-    st.header("🎷 Menu")
-    
-    # 語言
-    lang = st.selectbox("語言", ["zh-TW", "en"], format_func=lambda x: "中文" if x == "zh-TW" else "English")
-    if lang != st.session_state.get('language'):
-        st.session_state.language = lang
-    
-    st.divider()
-    
-    # 登入狀態
-    if st.session_state.user:
-        st.write(f"👤 {st.session_state.user.get('company_name', 'User')}")
-        st.write(f"📧 {st.session_state.user.get('email', '')}")
-        if st.button(t("logout"), key="logout_btn"):
-            st.session_state.user = None
-            st.rerun()
-    else:
-        st.warning("未登入")
-        if st.button("🔐 " + t("login"), key="login_btn"):
-            st.session_state.page = t("login")
-            st.rerun()
-    
-    st.divider()
-    
-    # 導航
-    pages = [t("home"), t("products"), t("cart"), t("orders"), t("inquiry"), t("messages"), t("admin"), t("login")]
-    choice = st.radio("導航", pages, index=pages.index(st.session_state.page) if st.session_state.page in pages else 0)
-    st.session_state.page = choice
-    
-    st.divider()
-    
-    # API 測試
-    if st.button("🔌 API 狀態"):
-        result = api_get("/health")
-        st.success(f"✅ 連線正常" if result else "❌ 連線失敗")
-
 # ============== 頁面：首頁 ==============
 def page_home():
-    st.markdown(f"""
-    <div class="hero">
-        <h1>🎷 {t('title')}</h1>
-        <p>連接全球製造商與經銷商</p>
+    # Hero
+    st.markdown("""
+    <div style="text-align: center; padding: 60px 20px; background: linear-gradient(180deg, #1A1A1A 0%, #0D0D0D 100%); margin: -60px -2rem 40px -2rem;">
+        <h1 style="font-size: 48px; letter-spacing: 10px; color: #C9A962 !important; font-family: Georgia, serif; margin-bottom: 20px;">SAXOPHONE B2B</h1>
+        <p style="color: #999; font-size: 16px; letter-spacing: 4px;">全球專業薩克斯風交易平台</p>
+        <p style="color: #666; font-size: 14px; margin-top: 30px;">連接製造商與經銷商的橋樑</p>
     </div>
     """, unsafe_allow_html=True)
     
-    st.subheader("✨ " + t("featured_brands"))
-    cols = st.columns(4)
-    brands = [("Selmer", "法國"), ("Yamaha", "日本"), ("Yanagisawa", "日本"), ("Keilwerth", "德國")]
-    for i, (b, c) in enumerate(brands):
-        with cols[i]:
-            st.markdown(f'<div class="brand-card"><h3>{b}</h3><p>{c}</p></div>', unsafe_allow_html=True)
+    # 精選品牌
+    st.markdown('<div class="section-title">精選品牌</div>', unsafe_allow_html=True)
     
-    st.subheader("📦 商品分類")
-    cats = ["Alto", "Tenor", "Soprano", "Baritone"]
+    brands = [
+        ("Selmer", "法國", "1922"),
+        ("Yamaha", "日本", "1964"),
+        ("Yanagisawa", "日本", "1951"),
+        ("Keilwerth", "德國", "1925")
+    ]
+    
     cols = st.columns(4)
-    for i, c in enumerate(cats):
+    for i, (brand, country, year) in enumerate(brands):
         with cols[i]:
-            st.info(f"🎷 **{c}**")
+            st.markdown(f"""
+            <div class="product-item" style="padding: 40px 20px;">
+                <h3 style="color: #C9A962 !important; font-size: 24px; margin-bottom: 15px;">{brand}</h3>
+                <p style="color: #666; font-size: 14px;">{country}</p>
+                <p style="color: #444; font-size: 12px;">Since {year}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # 商品分類
+    st.markdown('<div class="section-title">商品分類</div>', unsafe_allow_html=True)
+    
+    cats = [
+        ("Alto", "中音薩克斯風"),
+        ("Tenor", "次中音薩克斯風"),
+        ("Soprano", "高音薩克斯風"),
+        ("Baritone", "上低音薩克斯風")
+    ]
+    
+    cols = st.columns(4)
+    for i, (name, desc) in enumerate(cats):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="product-item">
+                <h4 style="color: #C9A962 !important;">{name}</h4>
+                <p style="color: #666; font-size: 13px;">{desc}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # 精選商品
+    st.markdown('<div class="section-title">精選商品</div>', unsafe_allow_html=True)
+    
+    result = api_get("/api/products?limit=4")
+    if result and result.get('products'):
+        cols = st.columns(4)
+        for i, p in enumerate(result['products']):
+            with cols[i]:
+                img_html = ""
+                if p.get('images'):
+                    img_html = f'<img src="{p["images"][0]}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 15px;">'
+                
+                st.markdown(f"""
+                <div class="product-item">
+                    {img_html}
+                    <h4 style="color: #C9A962 !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
+                    <p style="color: #999; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
+                    <p style="color: #fff; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
 # ============== 頁面：商品 ==============
 def page_products():
-    st.header("🎷 " + t("products"))
+    st.markdown('<div class="section-title">全部商品</div>', unsafe_allow_html=True)
     
     # 篩選
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3 = st.columns([1, 1, 1])
     with c1:
-        cat_filter = st.selectbox("類型", ["全部", "Alto", "Tenor", "Soprano", "Baritone"])
+        cat = st.selectbox("類型", ["全部", "Alto", "Tenor", "Soprano", "Baritone"])
     with c2:
-        brand_filter = st.selectbox("品牌", ["全部", "Selmer", "Yamaha", "Yanagisawa", "Keilwerth"])
+        brand = st.selectbox("品牌", ["全部", "Selmer", "Yamaha", "Yanagisawa", "Keilwerth"])
     with c3:
-        status_filter = st.selectbox("狀態", ["active", "inactive"])
+        status = st.selectbox("庫存", ["active", "inactive"])
     
     params = {}
-    if cat_filter != "全部": params["category"] = cat_filter
-    if brand_filter != "全部": params["brand"] = brand_filter
-    params["status"] = status_filter
+    if cat != "全部": params["category"] = cat
+    if brand != "全部": params["brand"] = brand
+    params["status"] = status
     
     result = api_get("/api/products", params)
     
     if result and result.get('products'):
-        for p in result['products']:
-            with st.expander(f"🔹 {p['name']} - ${p.get('price', 'N/A')}"):
-                c1, c2 = st.columns([1, 1])
-                with c1:
-                    st.write(f"**品牌:** {p['brand']} | **類型:** {p['category']}")
-                    st.write(f"**型號:** {p.get('model', '-')} | **年份:** {p.get('year', '-')}")
-                    st.write(f"**狀態:** {p['condition']} | **庫存:** {p.get('stock', 0)}")
-                with c2:
-                    if p.get('images') and len(p.get('images', [])) > 0:
-                        # 支援 base64 圖片和 URL 圖片
-                        img_url = p['images'][0]
-                        if img_url.startswith('data:'):
-                            st.image(img_url, width=150)
-                        else:
-                            st.image(f"{API_BASE_URL}{img_url}", width=150)
-                    if st.session_state.user and st.button(f"🛒 加入購物車", key=f"add_{p['id']}"):
-                        res = api_post("/api/cart", {"buyer_id": st.session_state.user['id'], "product_id": p['id']})
-                        if res and "error" not in res:
-                            st.success("已加入購物車！")
+        # 網格顯示
+        for i in range(0, len(result['products']), 4):
+            row = result['products'][i:i+4]
+            cols = st.columns(4)
+            for j, p in enumerate(row):
+                with cols[j]:
+                    img_html = ""
+                    if p.get('images'):
+                        img_html = f'<img src="{p["images"][0]}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 15px;">'
+                    
+                    with st.container():
+                        st.markdown(f"""
+                        <div class="product-item">
+                            {img_html}
+                            <h4 style="color: #C9A962 !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
+                            <p style="color: #999; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
+                            <p style="color: #fff; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        if st.session_state.user:
+                            if st.button(f"加入購物車", key=f"add_{p['id']}"):
+                                res = api_post("/api/cart", {"buyer_id": st.session_state.user['id'], "product_id": p['id']})
+                                if res and "error" not in res:
+                                    st.success("已加入!")
     else:
         st.info("尚無商品")
 
 # ============== 頁面：購物車 ==============
 def page_cart():
-    st.header("🛒 " + t("cart"))
+    st.markdown('<div class="section-title">購物車</div>', unsafe_allow_html=True)
     
     if not st.session_state.user:
         st.warning("請先登入")
@@ -207,7 +332,7 @@ def page_cart():
     result = api_get(f"/api/cart?buyer_id={st.session_state.user['id']}")
     
     if not result or not result.get('items'):
-        st.info(t("no_items"))
+        st.info("購物車是空的")
         return
     
     total = 0
@@ -222,141 +347,34 @@ def page_cart():
         with c1: st.write(f"**{p['name']}**")
         with c2: st.write(f"x{qty}")
         with c3: st.write(f"${price}")
-        with c4: 
-            if st.button(f"🗑️", key=f"del_cart_{item['cart_id']}"):
-                api_delete(f"/api/cart/{item['cart_id']}")
-                st.rerun()
+        with c4: st.write(f"${subtotal}")
     
-    st.divider()
-    st.write(f"### {t('total')}: ${total}")
+    st.markdown("---")
+    st.write(f"### 總計: ${total}")
     
-    # 結帳
     with st.form("checkout"):
         payment = st.selectbox("付款方式", ["bank_transfer", "credit_card", "cod", "installment"])
         address = st.text_area("收貨地址")
-        submitted = st.form_submit_button(t("checkout"), type="primary")
-        
-        if submitted:
+        if st.form_submit_button("結帳", type="primary"):
             if not address:
-                st.error("請填寫收貨地址")
+                st.error("請填寫地址")
             else:
-                # 找第一個 seller（簡化）
-                seller_id = 2
-                res = api_post("/api/orders", {
-                    "buyer_id": st.session_state.user['id'],
-                    "seller_id": seller_id,
-                    "payment_method": payment,
-                    "shipping_address": address
-                })
+                res = api_post("/api/orders", {"buyer_id": st.session_state.user['id'], "seller_id": 2, "payment_method": payment, "shipping_address": address})
                 if res and "error" not in res:
-                    st.success(t("order_success"))
-                    st.rerun()
-
-# ============== 頁面：訂單 ==============
-def page_orders():
-    st.header("📋 " + t("orders"))
-    
-    if not st.session_state.user:
-        st.warning("請先登入")
-        return
-    
-    user_id = st.session_state.user['id']
-    result = api_get(f"/api/orders?buyer_id={user_id}")
-    
-    if result and result.get('orders'):
-        for o in result['orders']:
-            with st.expander(f"📦 {o['order_number']} - {o['status']} - ${o['total_amount']}"):
-                st.write(f"**狀態:** {o['status']}")
-                st.write(f"**日期:** {o.get('created_at', '-')}")
-                st.write(f"**付款方式:** {o.get('payment_method', '-')}")
-                st.write(f"**收貨地址:** {o.get('shipping_address', '-')}")
-                st.write("**商品:**")
-                for item in o.get('items', []):
-                    st.write(f"  - {item.get('name')} x{item.get('quantity')} = ${item.get('price')}")
-    else:
-        st.info("尚無訂單")
-
-# ============== 頁面：詢價 ==============
-def page_inquiry():
-    st.header("💬 " + t("inquiry"))
-    
-    if not st.session_state.user:
-        st.warning("請先登入")
-        return
-    
-    # 發詢價
-    with st.form("inquiry_form"):
-        product_id = st.number_input("商品ID", min_value=1)
-        message = st.text_area("詢價訊息")
-        submitted = st.form_submit_button("發送詢價", type="primary")
-        
-        if submitted:
-            res = api_post("/api/inquiries", {
-                "product_id": product_id,
-                "buyer_id": st.session_state.user['id'],
-                "message": message
-            })
-            if res and "error" not in res:
-                st.success("詢價已發送！")
-                st.rerun()
-    
-    st.divider()
-    
-    # 查看詢價
-    result = api_get(f"/api/inquiries?buyer_id={st.session_state.user['id']}")
-    if result and result.get('inquiries'):
-        for i in result['inquiries']:
-            st.write(f"📨 商品ID:{i['product_id']} - 狀態:{i['status']}")
-            st.write(f"   {i['message']}")
-            st.write("---")
-
-# ============== 頁面：訊息 ==============
-def page_messages():
-    st.header("✉️ " + t("messages"))
-    
-    if not st.session_state.user:
-        st.warning("請先登入")
-        return
-    
-    # 發訊息
-    with st.form("msg_form"):
-        receiver_id = st.number_input("收件人ID", min_value=1)
-        content = st.text_area("訊息內容")
-        submitted = st.form_submit_button("發送", type="primary")
-        
-        if submitted:
-            res = api_post("/api/messages", {
-                "sender_id": st.session_state.user['id'],
-                "receiver_id": receiver_id,
-                "content": content
-            })
-            if res and "error" not in res:
-                st.success("訊息已發送！")
-                st.rerun()
-    
-    st.divider()
-    
-    # 查看訊息
-    result = api_get(f"/api/messages?user_id={st.session_state.user['id']}")
-    if result and result.get('messages'):
-        for m in result['messages']:
-            st.write(f"{'⬅️ 傳出' if m['sender_id'] == st.session_state.user['id'] else '➡️ 收到'}: {m['content']}")
-            st.caption(m.get('created_at', ''))
-            st.write("---")
+                    st.success("訂單建立成功!")
 
 # ============== 頁面：後台 ==============
 def page_admin():
-    st.header("🎛️ " + t("admin"))
+    st.markdown('<div class="section-title">後台管理</div>', unsafe_allow_html=True)
     
     if not st.session_state.user:
         st.warning("請先登入")
         return
     
-    tabs = st.tabs([t("product_mgmt"), t("add_product"), t("inventory"), t("finance")])
+    tabs = st.tabs(["商品管理", "新增商品", "庫存", "帳務"])
     
-    # 商品管理
+    # 商品列表
     with tabs[0]:
-        st.subheader("📋 " + t("product_mgmt"))
         result = api_get("/api/products")
         if result and result.get('products'):
             for p in result['products']:
@@ -364,84 +382,37 @@ def page_admin():
                 with c1: st.write(f"**{p['name']}**")
                 with c2: st.write(f"庫存:{p.get('stock', 0)}")
                 with c3: st.write(f"${p.get('price', 0)}")
-                with c4:
-                    if st.button("🗑️", key=f"del_{p['id']}"):
-                        api_delete(f"/api/products/{p['id']}")
-                        st.rerun()
     
     # 新增商品
     with tabs[1]:
-        st.subheader("➕ " + t("add_product"))
         with st.form("new_product"):
-            name = st.text_input("商品名稱 *")
-            brand = st.selectbox("品牌 *", ["Selmer", "Yamaha", "Yanagisawa", "Keilwerth", "其他"])
-            category = st.selectbox("類型 *", ["Alto", "Tenor", "Soprano", "Baritone"])
-            model = st.text_input("型號")
-            year = st.number_input("年份", 1900, 2030, 2024)
-            condition = st.selectbox("狀態", ["New", "Used"])
+            name = st.text_input("商品名稱")
+            brand = st.selectbox("品牌", ["Selmer", "Yamaha", "Yanagisawa", "Keilwerth"])
+            category = st.selectbox("類型", ["Alto", "Tenor", "Soprano", "Baritone"])
             price = st.number_input("價格", 0.0, 100000.0, 0.0)
             stock = st.number_input("庫存", 0, 10000, 0)
-            desc = st.text_area("說明")
-            files = st.file_uploader("圖片", type=['png','jpg','jpeg'], accept_multiple_files=True)
+            files = st.file_uploader("圖片", type=['png','jpg','jpeg'])
             
-            submitted = st.form_submit_button("💾 建立", type="primary")
-            
-            if submitted:
-                if not name:
-                    st.error("請填寫名稱")
-                else:
-                    # 準備表單資料
-                    form_data = {
-                        "name": name,
-                        "brand": brand,
-                        "category": category,
-                        "model": model,
-                        "year": year,
-                        "condition": condition,
-                        "price": price,
-                        "stock": stock,
-                        "description": desc
-                    }
-                    
-                    # 準備檔案（單一檔案）
-                    files_param = None
-                    if files and len(files) > 0:
-                        f = files[0]
-                        files_param = [("files", (f.name, f.getvalue(), f.type))]
-                    
-                    # 發送請求
-                    try:
-                        if files_param:
-                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, files=files_param, timeout=30)
-                        else:
-                            r = requests.post(f"{API_BASE_URL}/api/products", data=form_data, timeout=30)
-                        res = r.json() if r.status_code == 200 else {"error": r.text}
-                    except Exception as e:
-                        res = {"error": str(e)}
-                    
+            if st.form_submit_button("建立", type="primary"):
+                if name:
+                    form_data = {"name": name, "brand": brand, "category": category, "price": price, "stock": stock}
+                    file_data = None
+                    if files:
+                        file_data = [("files", (files.name, files.getvalue(), files.type))]
+                    res = api_post("/api/products", data=form_data, files=file_data)
                     if res and "error" not in res:
-                        st.success("✅ 建立成功！")
+                        st.success("建立成功!")
                         st.rerun()
-                    else:
-                        st.error(f"❌ 建立失敗: {res.get('error', '未知錯誤')}")
     
     # 庫存
     with tabs[2]:
-        st.subheader("📦 " + t("inventory"))
         result = api_get("/api/inventory")
         if result and result.get('inventory'):
             for inv in result['inventory']:
-                c1, c2, c3 = st.columns([3, 1, 1])
-                with c1: st.write(f"**{inv['product_id']}. {inv['name']}**")
-                with c2: st.number_input("庫存", value=inv['stock'], key=f"stock_{inv['product_id']}")
-                with c3:
-                    if st.button("更新", key=f"upd_{inv['product_id']}"):
-                        api_put(f"/api/inventory/{inv['product_id']}", {"stock": st.session_state.get(f"stock_{inv['product_id']}")})
-                        st.success("更新成功")
+                st.write(f"{inv['product_id']}. {inv['name']} - 庫存: {inv['stock']}")
     
     # 帳務
     with tabs[3]:
-        st.subheader("💰 " + t("finance"))
         result = api_get("/api/finance/summary")
         if result:
             c1, c2, c3 = st.columns(3)
@@ -451,45 +422,70 @@ def page_admin():
 
 # ============== 頁面：登入 ==============
 def page_login():
-    st.header("🔐 " + t("login"))
+    st.markdown('<div class="section-title">會員登入</div>', unsafe_allow_html=True)
     
-    with st.form("login_form"):
+    with st.form("login"):
         email = st.text_input("Email")
         password = st.text_input("密碼", type="password")
-        submitted = st.form_submit_button(t("login"), type="primary")
         
-        if submitted:
+        if st.form_submit_button("登入", type="primary"):
             result = api_post("/api/auth/login", {"email": email, "password": password})
             if result and "error" not in result:
                 st.session_state.user = result.get('user')
-                st.success("登入成功！")
+                st.success("登入成功!")
                 st.rerun()
             else:
                 st.error("登入失敗")
     
-    st.divider()
-    st.write("測試帳號：")
-    st.code("Email: buyer@sax.com\n密碼: buyer123")
+    st.caption("測試帳號: buyer@sax.com / buyer123")
+
+# ============== 側邊欄 ==============
+def render_sidebar():
+    with st.sidebar:
+        st.markdown("""
+        <h2 style="color: #C9A962; text-align: center; letter-spacing: 3px; margin-bottom: 30px;">MENU</h2>
+        """, unsafe_allow_html=True)
+        
+        # 頁面選單
+        pages = {
+            "home": "🏠 首頁",
+            "products": "🎷 商品",
+            "cart": "🛒 購物車",
+            "admin": "⚙️ 後台",
+            "login": "🔐 登入"
+        }
+        
+        for key, label in pages.items():
+            if st.button(label, key=f"nav_{key}", use_container_width=True):
+                st.session_state.page = key
+                st.rerun()
+        
+        st.markdown("---")
+        
+        # 用戶資訊
+        if st.session_state.user:
+            st.write(f"👤 {st.session_state.user.get('company_name', '')}")
+            if st.button("登出"):
+                st.session_state.user = None
+                st.rerun()
+        else:
+            st.warning("未登入")
 
 # ============== 主程式 ==============
 def main():
+    render_sidebar()
+    
     page = st.session_state.page
     
-    if page == t("home"):
+    if page == "home":
         page_home()
-    elif page == t("products"):
+    elif page == "products":
         page_products()
-    elif page == t("cart"):
+    elif page == "cart":
         page_cart()
-    elif page == t("orders"):
-        page_orders()
-    elif page == t("inquiry"):
-        page_inquiry()
-    elif page == t("messages"):
-        page_messages()
-    elif page == t("admin"):
+    elif page == "admin":
         page_admin()
-    elif page == t("login"):
+    elif page == "login":
         page_login()
     else:
         page_home()
