@@ -6,6 +6,9 @@ WORKDIR /app
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create uploads directory
+RUN mkdir -p uploads
+
 # Copy backend code
 COPY backend/ .
 
