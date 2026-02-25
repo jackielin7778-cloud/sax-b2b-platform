@@ -419,7 +419,9 @@ def page_login():
     with st.form("login_form"):
         email = st.text_input("Email")
         password = st.text_input("密碼", type="password")
-        if st.button(t("login"), type="primary"):
+        submitted = st.form_submit_button(t("login"), type="primary")
+        
+        if submitted:
             result = api_post("/api/auth/login", {"email": email, "password": password})
             if result and "error" not in result:
                 st.session_state.user = result.get('user')
