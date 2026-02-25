@@ -7,8 +7,8 @@ import os
 from pathlib import Path
 
 # ============== API 設定 ==============
-# 後端 API 位址（Zeabur）
-API_BASE_URL = os.environ.get("API_BASE_URL", "https://sax-b2b-platform.zeabur.app")
+# 後端 API 位址（Zeabur）- 直接寫死
+API_BASE_URL = "https://sax-b2b-platform.zeabur.app"
 
 # ============== 語系配置 ==============
 LANGUAGES = {
