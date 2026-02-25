@@ -9,80 +9,54 @@ from datetime import datetime
 # ============== API 設定 ==============
 API_BASE_URL = "https://sax-b2b-platform.zeabur.app"
 
-# ============== 奢華 CSS 風格 ==============
+# ============== 亮色奢華 CSS 風格 ==============
 st.markdown("""
 <style>
-    /* 全局 */
+    /* 全局 - 亮色背景 */
     .stApp {
-        background-color: #0D0D0D;
-        color: #F5F5F5;
+        background-color: #FAFAFA;
+        color: #1A1A1A;
     }
     
     /* 標題 */
     h1, h2, h3, h4 {
-        color: #C9A962 !important;
+        color: #B8860B !important;
         font-family: 'Georgia', serif;
         font-weight: 500;
     }
     
     /* 奢華金色 */
     :root {
-        --gold: #C9A962;
-        --gold-light: #D4B76A;
-        --gold-dark: #A88B4A;
-        --dark: #0D0D0D;
-        --dark-gray: #1A1A1A;
-        --gray: #333333;
-        --light-gray: #F5F5F5;
+        --gold: #B8860B;
+        --gold-light: #D4A84B;
+        --gold-dark: #8B6914;
+        --cream: #FAFAFA;
+        --warm-white: #F5F5F0;
+        --dark: #1A1A1A;
     }
     
     /* 按鈕 */
     .stButton > button {
         background: linear-gradient(135deg, var(--gold-dark), var(--gold)) !important;
-        color: #0D0D0D !important;
+        color: white !important;
         border: none !important;
-        border-radius: 2px !important;
+        border-radius: 3px !important;
         font-weight: 600;
         letter-spacing: 1px;
-        text-transform: uppercase;
     }
     
     .stButton > button:hover {
         background: var(--gold-light) !important;
     }
     
-    /* 輸入框 */
-    .stTextInput > div > div > input, .stTextArea > div > div > textarea {
-        background-color: var(--dark-gray);
-        border: 1px solid var(--gray);
-        color: var(--light-gray);
-    }
-    
-    /* 卡片 */
-    .product-card {
-        background: var(--dark-gray);
-        border: 1px solid var(--gray);
-        padding: 20px;
-        margin: 10px 0;
-        border-radius: 2px;
-    }
-    
     /* 側邊欄 */
     section[data-testid="stSidebar"] {
-        background-color: var(--dark-gray);
-    }
-    
-    /* 導航 */
-    .nav-button {
-        padding: 10px 20px;
-        color: var(--gold);
-        text-decoration: none;
-        font-weight: 500;
+        background-color: #F0F0F0;
     }
     
     /* 區塊標題 */
     .section-title {
-        color: var(--gold);
+        color: #B8860B;
         font-size: 28px;
         font-weight: 300;
         letter-spacing: 3px;
@@ -95,85 +69,45 @@ st.markdown("""
     .brand-title {
         font-family: 'Georgia', serif;
         font-size: 42px;
-        color: var(--gold);
+        color: #B8860B;
         letter-spacing: 8px;
     }
     
-    /* 產品展示 */
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        padding: 20px 0;
-    }
-    
+    /* 產品卡片 */
     .product-item {
-        background: linear-gradient(180deg, #1A1A1A 0%, #0D0D0D 100%);
-        border: 1px solid #333;
+        background: white;
+        border: 1px solid #E0E0E0;
         padding: 25px;
         text-align: center;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
     .product-item:hover {
         border-color: var(--gold);
+        box-shadow: 0 4px 16px rgba(184, 134, 11, 0.2);
         transform: translateY(-5px);
     }
     
-    /* 菜單選項 */
-    .menu-item {
-        color: #999 !important;
-        padding: 12px 0;
-        border-bottom: 1px solid #333;
-        cursor: pointer;
-    }
-    
-    .menu-item:hover, .menu-item.active {
-        color: var(--gold) !important;
-        border-left: 3px solid var(--gold);
-        padding-left: 10px;
+    /* 測試帳號 */
+    .test-account {
+        color: #333333 !important;
+        background: #F5F5F5;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
     }
     
     /* 分隔線 */
     hr {
-        border-color: #333;
+        border-color: #E0E0E0;
     }
     
-    /* 警告/成功 */
-    .stAlert {
-        background-color: var(--dark-gray);
-        border: 1px solid var(--gold);
-    }
-    
-    /* 標籤 */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: transparent;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        color: #999;
-        background: transparent;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        color: var(--gold) !important;
-        border-bottom: 2px solid var(--gold);
-    }
-    
-    /* Radio */
-    .stRadio > div > label {
-        color: #999;
-    }
-    
-    /* 圖片 */
-    img {
-        border-radius: 2px;
-    }
-    
-    /* 展開 */
-    .streamlit-expanderHeader {
-        background-color: var(--dark-gray);
-        color: var(--light-gray);
+    /* 輸入框 */
+    .stTextInput > div > div > input, .stTextArea > div > div > textarea {
+        background-color: white;
+        border: 1px solid #E0E0E0;
+        color: #1A1A1A;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -203,10 +137,10 @@ def api_post(url, data=None, files=None):
 def page_home():
     # Hero
     st.markdown("""
-    <div style="text-align: center; padding: 60px 20px; background: linear-gradient(180deg, #1A1A1A 0%, #0D0D0D 100%); margin: -60px -2rem 40px -2rem;">
-        <h1 style="font-size: 48px; letter-spacing: 10px; color: #C9A962 !important; font-family: Georgia, serif; margin-bottom: 20px;">SAXOPHONE B2B</h1>
-        <p style="color: #999; font-size: 16px; letter-spacing: 4px;">全球專業薩克斯風交易平台</p>
-        <p style="color: #666; font-size: 14px; margin-top: 30px;">連接製造商與經銷商的橋樑</p>
+    <div style="text-align: center; padding: 60px 20px; background: linear-gradient(180deg, #F5F5F0 0%, #FAFAFA 100%); margin: -60px -2rem 40px -2rem; border-bottom: 1px solid #E0E0E0;">
+        <h1 style="font-size: 48px; letter-spacing: 10px; color: #B8860B !important; font-family: Georgia, serif; margin-bottom: 20px;">SAXOPHONE B2B</h1>
+        <p style="color: #666; font-size: 16px; letter-spacing: 4px;">全球專業薩克斯風交易平台</p>
+        <p style="color: #999; font-size: 14px; margin-top: 30px;">連接製造商與經銷商的橋樑</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -224,10 +158,10 @@ def page_home():
     for i, (brand, country, year) in enumerate(brands):
         with cols[i]:
             st.markdown(f"""
-            <div class="product-item" style="padding: 40px 20px;">
-                <h3 style="color: #C9A962 !important; font-size: 24px; margin-bottom: 15px;">{brand}</h3>
+            <div class="product-item" style="padding: 40px 20px; background: white;">
+                <h3 style="color: #B8860B !important; font-size: 24px; margin-bottom: 15px;">{brand}</h3>
                 <p style="color: #666; font-size: 14px;">{country}</p>
-                <p style="color: #444; font-size: 12px;">Since {year}</p>
+                <p style="color: #999; font-size: 12px;">Since {year}</p>
             </div>
             """, unsafe_allow_html=True)
     
@@ -246,7 +180,7 @@ def page_home():
         with cols[i]:
             st.markdown(f"""
             <div class="product-item">
-                <h4 style="color: #C9A962 !important;">{name}</h4>
+                <h4 style="color: #B8860B !important;">{name}</h4>
                 <p style="color: #666; font-size: 13px;">{desc}</p>
             </div>
             """, unsafe_allow_html=True)
@@ -266,9 +200,9 @@ def page_home():
                 st.markdown(f"""
                 <div class="product-item">
                     {img_html}
-                    <h4 style="color: #C9A962 !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
-                    <p style="color: #999; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
-                    <p style="color: #fff; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
+                    <h4 style="color: #B8860B !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
+                    <p style="color: #666; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
+                    <p style="color: #1A1A1A; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -307,9 +241,9 @@ def page_products():
                         st.markdown(f"""
                         <div class="product-item">
                             {img_html}
-                            <h4 style="color: #C9A962 !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
-                            <p style="color: #999; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
-                            <p style="color: #fff; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
+                            <h4 style="color: #B8860B !important; font-size: 16px; margin-bottom: 10px;">{p['name']}</h4>
+                            <p style="color: #666; font-size: 13px;">{p.get('brand', '')} • {p.get('category', '')}</p>
+                            <p style="color: #1A1A1A; font-size: 18px; margin-top: 10px;">${p.get('price', 'N/A')}</p>
                         </div>
                         """, unsafe_allow_html=True)
                         
@@ -438,12 +372,20 @@ def page_login():
                 st.error("登入失敗")
     
     st.caption("測試帳號: buyer@sax.com / buyer123")
+    
+    # 亮色背景區塊
+    st.markdown("""
+    <div style="background: #F0F0F0; padding: 15px; border-radius: 8px; text-align: center; margin-top: 20px;">
+        <p style="color: #333; font-weight: bold; margin-bottom: 5px;">測試帳號</p>
+        <p style="color: #1A1A1A; font-size: 13px;">buyer@sax.com<br>buyer123</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============== 側邊欄 ==============
 def render_sidebar():
     with st.sidebar:
         st.markdown("""
-        <h2 style="color: #C9A962; text-align: center; letter-spacing: 3px; margin-bottom: 30px;">MENU</h2>
+        <h2 style="color: #B8860B; text-align: center; letter-spacing: 3px; margin-bottom: 30px;">MENU</h2>
         """, unsafe_allow_html=True)
         
         # 頁面選單
