@@ -107,16 +107,19 @@ with st.sidebar:
     if st.session_state.user:
         st.write(f"👤 {st.session_state.user.get('company_name', 'User')}")
         st.write(f"📧 {st.session_state.user.get('email', '')}")
-        if st.button(t("logout")):
+        if st.button(t("logout"), key="logout_btn"):
             st.session_state.user = None
             st.rerun()
     else:
         st.warning("未登入")
+        if st.button("🔐 " + t("login"), key="login_btn"):
+            st.session_state.page = t("login")
+            st.rerun()
     
     st.divider()
     
     # 導航
-    pages = [t("home"), t("products"), t("cart"), t("orders"), t("inquiry"), t("messages"), t("admin")]
+    pages = [t("home"), t("products"), t("cart"), t("orders"), t("inquiry"), t("messages"), t("admin"), t("login")]
     choice = st.radio("導航", pages, index=pages.index(st.session_state.page) if st.session_state.page in pages else 0)
     st.session_state.page = choice
     
@@ -447,6 +450,8 @@ def main():
         page_messages()
     elif page == t("admin"):
         page_admin()
+    elif page == t("login"):
+        page_login()
     else:
         page_home()
 
