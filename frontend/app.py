@@ -6,6 +6,10 @@ import requests
 import os
 from pathlib import Path
 
+# ============== API 設定 ==============
+# 後端 API 位址（Zeabur）
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://sax-b2b-platform.zeabur.app")
+
 # ============== 語系配置 ==============
 LANGUAGES = {
     "zh-TW": "繁體中文",
@@ -186,6 +190,18 @@ def t(key):
     lang = st.session_state.get('language', 'en')
     return TRANSLATIONS.get(lang, TRANSLATIONS['en']).get(key, key)
 
+# ============== API 測試 ==============
+def test_api_connection():
+    """測試 API 連線"""
+    try:
+        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        if response.status_code == 200:
+            return True, response.json()
+        else:
+            return False, f"Status: {response.status_code}"
+    except Exception as e:
+        return False, str(e)
+
 # ============== 頁面配置 ==============
 def set_page_config():
     st.set_page_config(
@@ -342,6 +358,17 @@ def render_sidebar():
         brands = ["Selmer", "Yamaha", "Yanagisawa", "Keilwerth"]
         for brand in brands:
             st.write(f"• {brand}")
+        
+        st.divider()
+        
+        # API 狀態
+        st.subheader("🔌 API 狀態")
+        if st.button("測試連線", use_container_width=True):
+            success, result = test_api_connection()
+            if success:
+                st.success(f"✅ 連線成功\n\n{result}")
+            else:
+                st.error(f"❌ 連線失敗\n\n{result}")
 
 # ============== 首頁 ==============
 def render_home():
